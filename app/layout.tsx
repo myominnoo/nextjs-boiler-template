@@ -11,7 +11,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Geist } from "next/font/google";
 import { client } from "@/config/client";
-import "@/styles/globals.css";
+import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 
 // ── Fonts ─────────────────────────────────────────────────
@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 //   - Inter (neutral, professional) ← current
 //   - DM Sans (friendly, modern)
 //   - Plus Jakarta Sans (clean, trustworthy)
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 // ── Metadata ──────────────────────────────────────────────
 // Pulled entirely from client.ts — zero manual editing needed per client.
