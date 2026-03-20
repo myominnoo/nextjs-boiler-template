@@ -1,26 +1,173 @@
+/* ==============================================================
+   /styles/globals.css
+   Tailwind v4 entry point.
+
+   In v4, this file replaces tailwind.config.ts entirely.
+   All theme tokens live here under @theme.
+   No content array, no JS config file needed.
+   ============================================================== */
+
+/* ── 1. Tailwind import ──────────────────────────────────────
+   Single line replaces the old @tailwind base/components/utilities
+   directives. Lightning CSS handles vendor prefixing automatically. */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── 2. Self-hosted fonts ────────────────────────────────────
+   next/font/local in layout.tsx handles the <link> injection.
+   These @font-face rules are the fallback for any CSS that
+   runs before React hydration, and for the font variable itself.
+   Swap file paths and family names to match /public/fonts/. */
+@font-face {
+  font-family: "SiteFont";
+  src: url("/fonts/sans-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@font-face {
+  font-family: "SiteFont";
+  src: url("/fonts/sans-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@font-face {
+  font-family: "SiteFont";
+  src: url("/fonts/sans-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ── 3. Theme tokens ─────────────────────────────────────────
+   @theme registers CSS custom properties as Tailwind design
+   tokens. Every variable here becomes a Tailwind utility class.
+
+   Examples after registration:
+     --color-brand-primary → bg-brand-primary, text-brand-primary
+     --font-sans           → font-sans
+     --radius-card         → rounded-card
+
+   The client brand colours are injected at runtime by layout.tsx
+   as --color-primary / --color-secondary etc. Those are NOT in
+   @theme because they are dynamic per client. Reference them with
+   Tailwind's arbitrary value syntax: bg-[var(--color-primary)].    */
+@theme {
+
+  /* Fonts
+     --font-sans is picked up by Tailwind's font-sans utility.
+     The CSS variable --font-sans is set by next/font/local in
+     layout.tsx — reference it here so Tailwind knows about it. */
+  --font-sans: var(--font-sans, "SiteFont", ui-sans-serif, system-ui, sans-serif);
+
+  /* Spacing scale extensions
+     Add any custom spacing values your design needs beyond
+     Tailwind's defaults (4, 8, 12 … 96). */
+  --spacing-18: 4.5rem;   /* gap-18, p-18, m-18 etc. */
+  --spacing-22: 5.5rem;
+  --spacing-128: 32rem;
+
+  /* Border radius
+     Registered so you can write rounded-card instead of
+     rounded-[var(--radius-card)] in component classes. */
+  --radius-card: 0.75rem;   /* 12px */
+  --radius-badge: 9999px;   /* fully pill-shaped */
+
+  /* Breakpoints
+     Tailwind v4 defaults: sm 40rem, md 48rem, lg 64rem, xl 80rem.
+     Add custom breakpoints here only if your design needs them. */
+  /* --breakpoint-xs: 30rem; */
+
+  /* Animation
+     Custom keyframe durations used in Gallery hover and
+     Navigation transitions. */
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-slide-up: slide-up 0.4s ease-out both;
+}
+
+/* ── 4. Keyframes ────────────────────────────────────────────
+   Defined outside @theme — @keyframes are not design tokens. */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── 5. Base layer ───────────────────────────────────────────
+   Global element defaults. Runs after Tailwind's preflight reset.
+   Keep this minimal — component-level styles belong in their .tsx. */
+@layer base {
+
+  /* Smooth scrolling for anchor links (e.g. #services, #contact) */
+  html {
+    scroll-behavior: smooth;
+    /* Prevent layout shift when a scrollbar appears */
+    scrollbar-gutter: stable;
+  }
+
+  /* Body inherits the client colour tokens injected by layout.tsx */
+  body {
+    background-color: var(--color-background, #ffffff);
+    color:            var(--color-text,       #0f172a);
+    font-family:      var(--font-sans);
+    line-height:      1.6;
+    -webkit-font-smoothing:  antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus ring — visible for keyboard users, hidden for mouse */
+  :focus-visible {
+    outline: 2px solid var(--color-primary, #1B4FD8);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Remove focus ring when interacting with a mouse */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Respect user motion preferences globally */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration:   0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration:  0.01ms !important;
+      scroll-behavior:      auto   !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── 6. Component layer ──────────────────────────────────────
+   Reusable multi-element patterns too complex for a single
+   Tailwind class, but too generic to live in a specific component.
+   Keep this section lean — prefer Tailwind utilities in JSX. */
+@layer components {
+
+  /* Section wrapper — consistent horizontal padding + max-width.
+     Usage: <div class="section-container"> */
+  .section-container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section vertical rhythm
+     Usage: <section class="section-spacing"> */
+  .section-spacing {
+    @apply py-20 sm:py-28;
+  }
+
+  /* Eyebrow label above section headings
+     Usage: <p class="eyebrow">What We Do</p> */
+  .eyebrow {
+    @apply mb-3 text-sm font-semibold uppercase tracking-widest;
+    color: var(--color-primary);
+  }
 }
