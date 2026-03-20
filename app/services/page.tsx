@@ -1,26 +1,25 @@
 // ============================================================
-//  /app/page.tsx
-//  Homepage — composes all section components in order.
-//  Server component. All interactivity is inside the sections.
+//  /app/services/page.tsx
 // ============================================================
-
+import type { Metadata } from "next";
 import { Navigation } from "@/components/sections/Navigation";
-import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
-import { About } from "@/components/sections/About";
-import { Gallery } from "@/components/sections/Gallery";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
+import { client } from "@/config/client";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Services",
+  description: `${client.businessName} services — ${client.services.map((s) => s.title).join(", ")}. ${client.serviceArea}.`,
+};
+
+export default function ServicesPage() {
   return (
     <>
       <Navigation />
-      <main>
-        <Hero />
+      <main className="pt-16">
         <Services />
-        <About />
-        <Gallery />
+        {/* Inline contact form so users can book right from the services page */}
         <Contact />
       </main>
       <Footer />
