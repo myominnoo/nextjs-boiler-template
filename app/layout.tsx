@@ -9,34 +9,23 @@
 // ============================================================
 
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
+import { Inter, Geist } from "next/font/google";
 import { client } from "@/config/client";
 import "@/styles/globals.css";
+import { cn } from "@/lib/utils";
 
 // ── Fonts ─────────────────────────────────────────────────
-// Swap these paths for your actual font files in /public/fonts/
-// next/font/local zero-CLS — font CSS is inlined at build time.
-const sansFont = localFont({
-  src: [
-    {
-      path: "../public/fonts/sans-regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/sans-semibold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/sans-bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-sans",
-  display: "swap",
-});
+// Using Google Fonts during development — no local files needed.
+//
+// To switch to self-hosted fonts in production:
+//   1. Add your woff2 files to /public/fonts/
+//   2. Replace this block with next/font/local (see prompt 1C notes)
+//
+// Good Google Font pairings for trades sites:
+//   - Inter (neutral, professional) ← current
+//   - DM Sans (friendly, modern)
+//   - Plus Jakarta Sans (clean, trustworthy)
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 // ── Metadata ──────────────────────────────────────────────
 // Pulled entirely from client.ts — zero manual editing needed per client.
@@ -96,7 +85,7 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="en" className={sansFont.variable}>
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       {/*
         Inline <style> tag is the safest way to inject dynamic CSS vars
         from server data without a runtime JS dependency.
